@@ -4,5 +4,6 @@ numpy
 python-dotenv
 anthropic
 langchain-community
+langchain-openai
 faiss-cpu
 openai
