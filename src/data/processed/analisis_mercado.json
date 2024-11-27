@@ -1,0 +1,61 @@
+{
+    "resumen_general": {
+        "total_propiedades": 100,
+        "area_total_disponible": 15931789.0,
+        "precio_promedio_renta": 0.8977333333333335
+    },
+    "propiedades_por_ciudad": {
+        "Monterrey": 20,
+        "Cd. Juárez": 16,
+        "Tijuana": 12,
+        "Queretaro": 11,
+        "Ciudad de Mexico ": 8,
+        "Guadalajara": 7,
+        "Mexicali": 6,
+        "Guanajuato": 5,
+        "Reynosa": 4,
+        "Chihuahua": 2,
+        "Matamoros": 2,
+        "Coahuila ": 2,
+        "San Luis Potosi": 1,
+        "Saltillo": 1,
+        "Nuevo Laredo": 1,
+        "Hermosillo": 1,
+        "Hidalgo": 1
+    },
+    "tipos_construccion": {
+        "Inventory": 69,
+        "Construction": 24,
+        "Planned": 7
+    },
+    "estadisticas_tamano": {
+        "min": 23680.0,
+        "max": 824173.0,
+        "promedio": 193900.54,
+        "mediana": 171895.5
+    },
+    "estadisticas_altura": {
+        "min": 18.0,
+        "max": 36.0,
+        "promedio": 29.818181818181817,
+        "mediana": 32.0
+    },
+    "area_disponible_por_region": {
+        "Bajio": 3066344,
+        "Central Mexico": 1661611,
+        "Northeast": 5148242,
+        "Northwest": 5363222,
+        "Pacific": 692370
+    },
+    "distribucion_clase": {
+        "A": 78,
+        "B": 22
+    },
+    "tipos_operacion": {
+        "Lease": 100
+    },
+    "estadisticas_andenes": {
+        "promedio_dock_doors": 11.1010101010101,
+        "promedio_drive_in": 2.0202020202020203
+    }
+}

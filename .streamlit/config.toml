@@ -1,0 +1,18 @@
+# Modern Streamlit Theme Configuration
+
+[theme]
+# Primary brand color - Deep Azure Blue for buttons and interactive elements
+primaryColor = "#1976D2"
+
+# Light Steel Blue background for a clean, professional look
+backgroundColor = "#EBF2F8"
+
+# Pure White for cards and content areas
+secondaryBackgroundColor = "#FFFFFF"
+
+# Rich Navy Blue for text - excellent readability
+textColor = "#0A2647"
+
+# Modern system font stack for crisp typography
+font = "serif"
+
