@@ -4,3 +4,6 @@ backgroundColor = "#FFFFFF"  # Pure white background
 secondaryBackgroundColor = "#F8FAFC"  # Light gray for sidebar
 textColor = "#1E293B"  # Dark gray for text
 font = "sans serif"
+
+[ui]
+hideTopBar = true

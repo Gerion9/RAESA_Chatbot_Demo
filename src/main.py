@@ -449,6 +449,53 @@ def main():
         }
     )
 
+    # Hide Streamlit's default header, footer and remove all padding
+    hide_streamlit_style = """
+        <style>
+            /* Remove all padding and margins */
+            #root > div:nth-child(1) > div > div > div > div > section > div {padding-top: 0 !important;}
+            .main > div {padding-top: 0 !important;}
+            .stApp {padding-top: 0 !important;}
+            section[data-testid="stSidebar"] {padding-top: 0 !important;}
+            
+            /* Hide default Streamlit elements */
+            div[data-testid="stToolbar"] {visibility: hidden;}
+            div[data-testid="stDecoration"] {visibility: hidden;}
+            div[data-testid="stHeader"] {display: none;}
+            footer {visibility: hidden;}
+            header {display: none;}
+            #MainMenu {visibility: hidden;}
+            
+            /* Remove login form container styling */
+            [data-testid="stForm"] {
+                background: transparent !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+            }
+            
+            /* Adjust login page container */
+            .login-page {
+                padding-top: 1rem !important;
+            }
+            
+            /* Remove any extra spacing */
+            .element-container {
+                margin-bottom: 0 !important;
+                padding: 0 !important;
+            }
+            
+            /* Remove block container padding */
+            .block-container {
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+                margin-top: 0 !important;
+            }
+        </style>
+    """
+    st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
     # Apply theme based on session state
     apply_theme()
 
@@ -584,10 +631,10 @@ def main():
         if 'logo_base64' in st.session_state:
             st.markdown(
                 f"""
-                <div class="login-logo" style="max-width: 200px; margin: 0 auto;">
+                <div class="login-logo" style="max-width: 400px; margin: 0 auto;">
                     <img src="data:image/png;base64,{st.session_state.logo_base64}" alt="STRTGY" style="width: 100%; height: auto;">
                 </div>
-                <h1 class="app-title" style="font-size: 1.5rem; margin: 1rem 0;">Asistente de Bienes Raíces Industriales</h1>
+                <h1 class="app-title" style="font-size: 2rem; margin: 1rem 0; text-align: center;">🏢 Asistente de Bienes Raíces Industriales</h1>
                 """,
                 unsafe_allow_html=True
             )
@@ -596,7 +643,15 @@ def main():
         
         # Login form with enhanced styling
         try:
-            authenticator.login('main')
+            authenticator.login(
+                location='main',
+                fields={
+                    'Form name': 'Iniciar Sesión',
+                    'Username': 'Usuario',
+                    'Password': 'Contraseña',
+                    'Login': 'Ingresar'
+                }
+            )
             
             if st.session_state.get('authentication_status') == False:
                 st.error('❌ Usuario o contraseña incorrectos')
@@ -972,7 +1027,7 @@ def main():
                 <ul>
                     <li>🔍 <strong>Búsqueda de propiedades:</strong> Encuentra propiedades industriales por ubicación</li>
                     <li>🔍 <strong>Información detallada:</strong> Obtén datos específicos de propiedades</li>
-                    <li>📈 <strong>Análisis comparativo:</strong> Compara propiedades y mercados</li>
+                    <li> <strong>Análisis comparativo:</strong> Compara propiedades y mercados</li>
                     <li>📉 <strong>Tendencias:</strong> Analiza el comportamiento del mercado</li>
                     <li>💰 <strong>Precios:</strong> Consulta disponibilidad y condiciones comerciales</li>
                 </ul>
