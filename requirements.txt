@@ -5,6 +5,7 @@ python-dotenv
 anthropic
 langchain-community
 faiss-cpu
+langchain-openai
 openai
 streamlit-authenticator==0.2.3
 pyyaml
