@@ -10,6 +10,14 @@ import html
 import pdfkit
 import re
 import time
+import json
+from dotenv import load_dotenv
+import yaml
+from yaml.loader import SafeLoader
+from src.data.loader import DataLoader
+from src.data.embeddings import EmbeddingManager
+from src.chatbot.engine import RealEstateChatbot
+from src.config import Config
 
 # Add the project root directory to Python path
 project_root = str(Path(__file__).parent.parent)
@@ -17,12 +25,6 @@ sys.path.insert(0, project_root)
 
 import streamlit as st
 import streamlit_authenticator as stauth
-import yaml
-from yaml.loader import SafeLoader
-from src.data.loader import DataLoader
-from src.data.embeddings import EmbeddingManager
-from src.chatbot.engine import RealEstateChatbot
-from src.config import Config
 
 # Definir la clase PDF personalizada
 class PDF(FPDF):
@@ -78,22 +80,41 @@ class PDF(FPDF):
 
 def init_authentication():
     """Initialize authentication"""
-    # Load authentication config
-    auth_file = Path(Config.BASE_DIR) / 'config' / 'auth.yaml'
-    with open(auth_file) as file:
-        config = yaml.load(file, Loader=SafeLoader)
+    # Load environment variables
+    load_dotenv()
     
-    # Create authenticator object with plain text passwords
-    authenticator = stauth.Authenticate(
-        config['credentials'],
-        config['cookie']['name'],
-        config['cookie']['key'],
-        config['cookie']['expiry_days'],
-        preauthorized=None,
-        validator=None  # This disables password hashing
-    )
-    
-    return authenticator
+    try:
+        # Get auth config from environment variable
+        config = json.loads(os.getenv('AUTH_CREDENTIALS'))
+        
+        # Create authenticator object
+        authenticator = stauth.Authenticate(
+            config['credentials'],
+            config['cookie']['name'],
+            config['cookie']['key'],
+            config['cookie']['expiry_days'],
+            preauthorized=None,
+            validator=None
+        )
+        
+        return authenticator
+        
+    except Exception as e:
+        st.error(f"Error loading authentication configuration: {str(e)}")
+        # Fallback to file-based auth if environment variable is not set
+        auth_file = Path(Config.BASE_DIR) / 'config' / 'auth.yaml'
+        with open(auth_file) as file:
+            config = yaml.load(file, Loader=SafeLoader)
+        
+        authenticator = stauth.Authenticate(
+            config['credentials'],
+            config['cookie']['name'],
+            config['cookie']['key'],
+            config['cookie']['expiry_days'],
+            preauthorized=None,
+            validator=None
+        )
+        return authenticator
 
 def apply_theme():
     """Apply theme based on session state at startup"""
@@ -452,6 +473,11 @@ def main():
     # Hide Streamlit's default header, footer and remove all padding
     hide_streamlit_style = """
         <style>
+            /* Use system fonts instead */
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif !important;
+            }
+            
             /* Remove all padding and margins */
             #root > div:nth-child(1) > div > div > div > div > section > div {padding-top: 0 !important;}
             .main > div {padding-top: 0 !important;}
@@ -707,7 +733,7 @@ def main():
             with st.expander("🎨 Personalización"):
                 # Theme selector
                 theme_mode = st.radio(
-                    "🌓 Modo",
+                    "Modo",
                     options=["Claro", "Oscuro"],
                     horizontal=True,
                     index=0 if st.session_state.theme_mode == "Claro" else 1,
