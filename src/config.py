@@ -12,12 +12,9 @@ class Config:
     # Get the base directory (project root)
     BASE_DIR = Path(__file__).parent.parent
     
-    # Print current directory for debugging
-    print(f"Base directory: {BASE_DIR}")
     
     # Data paths using absolute paths
     DATA_PATH = os.getenv('DATA_PATH', str(BASE_DIR / 'src' / 'data' / 'processed' / 'real_estate_data.json'))
-    print(f"Data path: {DATA_PATH}")  # Debug print
     MARKET_ANALYSIS_PATH = os.getenv('MARKET_ANALYSIS_PATH', str(BASE_DIR / 'src' / 'data' / 'processed' / 'analisis_mercado.json'))
     
     # Cache directory using absolute path

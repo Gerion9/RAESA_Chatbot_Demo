@@ -1,0 +1,15 @@
+credentials:
+  usernames:
+    admin:
+      email: admin@example.com
+      name: Admin User
+      password: admin123
+    user:
+      email: user@example.com  
+      name: Regular User
+      password: user123
+
+cookie:
+  expiry_days: 30
+  key: "real_estate_chat_signature"
+  name: "real_estate_chat_cookie"
