@@ -7,7 +7,7 @@ langchain-community
 faiss-cpu
 langchain-openai
 openai
-streamlit-authenticator==0.2.3
+streamlit-authenticator==0.4.1
 pyyaml
 jinja2
 fpdf
