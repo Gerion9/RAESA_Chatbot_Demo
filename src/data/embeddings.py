@@ -5,7 +5,7 @@ from typing import List, Dict
 import numpy as np
 from langchain_openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
-from ..config import Config
+from src.config import Config
 import pandas as pd
 
 class EmbeddingManager:
