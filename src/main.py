@@ -14,10 +14,10 @@ import json
 from dotenv import load_dotenv
 import yaml
 from yaml.loader import SafeLoader
-from src.data.loader import DataLoader
-from src.data.embeddings import EmbeddingManager
-from src.chatbot.engine import RealEstateChatbot
-from src.config import Config
+from data.loader import DataLoader
+from data.embeddings import EmbeddingManager
+from chatbot.engine import RealEstateChatbot
+from config import Config
 
 # Add the project root directory to Python path
 project_root = str(Path(__file__).parent.parent)
