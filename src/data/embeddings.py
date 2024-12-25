@@ -5,7 +5,16 @@ from typing import List, Dict
 import numpy as np
 from langchain_openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
+import sys
+from pathlib import Path
+
+# Add the project root to Python path
+project_root = str(Path(__file__).parent.parent.parent)
+if project_root not in sys.path:
+    sys.path.append(project_root)
+
 from src.config import Config
+import pickle
 import pandas as pd
 
 class EmbeddingManager:
