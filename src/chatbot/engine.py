@@ -3,8 +3,16 @@ from pathlib import Path
 import json
 from typing import List, Optional, Dict, Any
 import re
-from ..config import Config
-from ..data.loader import DataLoader
+import sys
+from pathlib import Path
+
+# Add the project root to Python path
+project_root = str(Path(__file__).parent.parent.parent)
+if project_root not in sys.path:
+    sys.path.append(project_root)
+
+from src.config import Config
+from src.data.loader import DataLoader
 
 class RealEstateChatbot:
     def __init__(self, vectorstore):
