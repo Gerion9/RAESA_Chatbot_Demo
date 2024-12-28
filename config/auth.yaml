@@ -1,27 +1,27 @@
 credentials:
   usernames:
-    demo.raesa.ia:
-      email: demo.raesa.ia
+    demo.strtgy.ai:
+      email: demo.strtgy.ai
       name: Usuario Demo
-      password: raesa_2025
-    arturo.raesa.ia:
-      email: arturo.raesa.ia
+      password: strtgy_2025
+    arturo.strtgy.ai:
+      email: arturo.strtgy.ai
       name: Arturo Salazar
-      password: raesa_2025
-    fabian.raesa.ia:
-      email: fabian.raesa.ia
+      password: strtgy_2025
+    fabian.strtgy.ai:
+      email: fabian.strtgy.ai
       name: Fabián Salazar
-      password: raesa_2025
-    gairo.raesa.ia:
-      email: gairo.raesa.ia
+      password: strtgy_2025
+    gairo.strtgy.ai:
+      email: gairo.strtgy.ai
       name: Gairo Peralta
-      password: raesa_2025
-    christian.raesa.ia:
-      email: christian.raesa.ia
+      password: strtgy_2025
+    christian.strtgy.ai:
+      email: christian.strtgy.ai
       name: Christian Magallón
-      password: raesa_2025
+      password: strtgy_2025
 
 cookie:
   expiry_days: 30
-  key: raesa_chat_signature
-  name: raesa_chat_cookie
+  key: strtgy_chat_signature
+  name: strtgy_chat_cookie
