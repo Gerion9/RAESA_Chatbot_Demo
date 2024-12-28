@@ -4,7 +4,7 @@ import faiss
 from typing import List, Dict
 import numpy as np
 from langchain_openai import OpenAIEmbeddings
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 import sys
 from pathlib import Path
 
@@ -25,8 +25,8 @@ class EmbeddingManager:
         self.cache_dir = Config.CACHE_DIR
         self.cache_dir.mkdir(exist_ok=True)
         
-    def create_property_embeddings(self, df) -> FAISS:
-        """Create or load cached embeddings"""
+    def create_service_embeddings(self, df) -> FAISS:
+        """Create or load cached embeddings for RAESA services"""
         if Config.EMBEDDINGS_CACHE.exists():
             print("Loading embeddings from cache...")
             try:
@@ -42,17 +42,17 @@ class EmbeddingManager:
         
         print("Creating new embeddings...")
         
-        # Crear descripciones combinadas de las propiedades
-        texts = self._create_property_descriptions(df)
+        # Create combined descriptions of services and content
+        texts = self._create_service_descriptions(df)
         
-        # Crear vectorstore
+        # Create vectorstore
         vectorstore = FAISS.from_texts(
             texts,
             self.embeddings,
             metadatas=[{"source": str(i)} for i in range(len(texts))]
         )
         
-        # Guardar en caché
+        # Cache embeddings
         try:
             vectorstore.save_local(str(Config.EMBEDDINGS_CACHE))
             print("Embeddings cached successfully")
@@ -61,28 +61,23 @@ class EmbeddingManager:
         
         return vectorstore
     
-    def _create_property_descriptions(self, df) -> List[str]:
+    def _create_service_descriptions(self, df) -> List[str]:
         """
-        Crea descripciones textuales de las propiedades combinando sus características.
+        Creates textual descriptions combining document content and metadata.
         """
         descriptions = []
         
         for _, row in df.iterrows():
-            # Combinar todas las características relevantes en un texto
+            # Combine all relevant characteristics into text
             description_parts = []
             
-            # Añadir cada campo disponible a la descripción
+            # Add each available field to description
             for column in df.columns:
-                if pd.notna(row[column]):  # Solo incluir valores no nulos
-                    # Formatear valores numéricos
-                    if isinstance(row[column], (int, float)):
-                        value = f"{row[column]:,.2f}" if isinstance(row[column], float) else str(row[column])
-                    else:
-                        value = str(row[column])
-                    
+                if pd.notna(row[column]):
+                    value = str(row[column])
                     description_parts.append(f"{column}: {value}")
             
-            # Unir todas las partes en una descripción completa
+            # Join all parts into complete description
             full_description = "\n".join(description_parts)
             descriptions.append(full_description)
         

@@ -16,7 +16,7 @@ import yaml
 from yaml.loader import SafeLoader
 from data.loader import DataLoader
 from data.embeddings import EmbeddingManager
-from chatbot.engine import RealEstateChatbot
+from chatbot.engine import RAESAChatbot
 from config import Config
 
 # Add the project root directory to Python path
@@ -80,28 +80,38 @@ class PDF(FPDF):
 
 def init_authentication():
     """Initialize authentication"""
-    # Load environment variables
     load_dotenv()
     
     try:
         # Get auth config from environment variable
-        config = json.loads(os.getenv('AUTH_CREDENTIALS'))
+        auth_credentials = os.getenv('AUTH_CREDENTIALS')
+        if not auth_credentials:
+            raise ValueError("AUTH_CREDENTIALS not found in environment")
         
-        # Create authenticator object
+        # Clean and parse the JSON string
+        auth_credentials = auth_credentials.strip().strip("'\"")
+        auth_credentials = auth_credentials.replace('\\"', '"')
+        
+        try:
+            config = json.loads(auth_credentials)
+        except json.JSONDecodeError as je:
+            print(f"JSON Decode Error: {je}")
+            print(f"Problematic string: {auth_credentials}")
+            # Fallback to YAML if JSON parsing fails
+            raise
+            
         authenticator = stauth.Authenticate(
             config['credentials'],
             config['cookie']['name'],
             config['cookie']['key'],
-            config['cookie']['expiry_days'],
-            preauthorized=None,
-            validator=None
+            config['cookie']['expiry_days']
         )
         
         return authenticator
         
     except Exception as e:
-        st.error(f"Error loading authentication configuration: {str(e)}")
-        # Fallback to file-based auth if environment variable is not set
+        print(f"Falling back to YAML config due to error: {str(e)}")
+        # Fallback to YAML configuration
         auth_file = Path(Config.BASE_DIR) / 'config' / 'auth.yaml'
         with open(auth_file) as file:
             config = yaml.load(file, Loader=SafeLoader)
@@ -110,9 +120,7 @@ def init_authentication():
             config['credentials'],
             config['cookie']['name'],
             config['cookie']['key'],
-            config['cookie']['expiry_days'],
-            preauthorized=None,
-            validator=None
+            config['cookie']['expiry_days']
         )
         return authenticator
 
@@ -459,14 +467,14 @@ def main():
 
     # Must be the first Streamlit command
     st.set_page_config(
-        page_title="STRTGY | Industrial Real Estate",
-        page_icon="🏢",
+        page_title="STRTGY | RAESA - Servicios de Desazolve",
+        page_icon="🚰",
         layout="wide",
         initial_sidebar_state="expanded",
         menu_items={
-            'Get Help': 'mailto:support@strtgy.com',
-            'Report a bug': 'mailto:bugs@strtgy.com',
-            'About': 'STRTGY - Asistente de Bienes Raíces Industriales'
+            'Get Help': 'mailto:support@strtgy.ai',
+            'Report a bug': 'mailto:bugs@strtgy.ai', 
+            'About': 'RAESA - Asistente de Servicios de Desazolve'
         }
     )
 
@@ -660,7 +668,7 @@ def main():
                 <div class="login-logo" style="max-width: 400px; margin: 0 auto;">
                     <img src="data:image/png;base64,{st.session_state.logo_base64}" alt="STRTGY" style="width: 100%; height: auto;">
                 </div>
-                <h1 class="app-title" style="font-size: 2rem; margin: 1rem 0; text-align: center;">🏢 Asistente de Bienes Raíces Industriales</h1>
+                <h1 class="app-title" style="font-size: 2rem; margin: 1rem 0; text-align: center;">🚰 Asistente de Servicios RAESA</h1>
                 """,
                 unsafe_allow_html=True
             )
@@ -1031,45 +1039,72 @@ def main():
 
         # Inicializar chatbot si es necesario
         if "chatbot" not in st.session_state:
-            with st.spinner("Inicializando chatbot..."):
+            with st.spinner("Inicializando asistente..."):
                 data_loader = DataLoader(Config.DATA_PATH)
                 df = data_loader.load_data()
                 embedding_manager = EmbeddingManager()
-                vectorstore = embedding_manager.create_property_embeddings(df)
-                st.session_state.chatbot = RealEstateChatbot(vectorstore)
+                vectorstore = embedding_manager.create_service_embeddings(df)
+                st.session_state.chatbot = RAESAChatbot(vectorstore)
  # Main chat interface
-        st.title("🏢 Asistente de Bienes Raíces Industriales")
+        st.title("🚰 Asistente de Servicios RAESA")
         
         # Initialize messages if needed
         if 'messages' not in st.session_state:
             st.session_state.messages = []
             welcome_msg = {
                 "role": "assistant",
-                "content": f"""<h1>👋 ¡Bienvenido {st.session_state["name"]}!</h1>
-                
-                <h2>🤝 ¿Cómo puedo ayudarte?</h2>
-                
-                <h3>📋 Servicios disponibles:</h3>
-                <ul>
-                    <li>🔍 <strong>Búsqueda de propiedades:</strong> Encuentra propiedades industriales por ubicación</li>
-                    <li>🔍 <strong>Información detallada:</strong> Obtén datos específicos de propiedades</li>
-                    <li> <strong>Análisis comparativo:</strong> Compara propiedades y mercados</li>
-                    <li>📉 <strong>Tendencias:</strong> Analiza el comportamiento del mercado</li>
-                    <li>💰 <strong>Precios:</strong> Consulta disponibilidad y condiciones comerciales</li>
-                </ul>
+                "content": f"""<h1>👋 ¡Bienvenido {st.session_state["name"]} al Asistente de RAESA!</h1>
+        
+        <h2>🤝 ¿Cómo puedo ayudarte?</h2>
+        
+        <h3>📋 Servicios Principales:</h3>
+        <ul>
+            <li>🚰 <strong>Disposición de lodos</strong></li>
+            <li>🏭 <strong>Desazolve de cárcamos y plantas de tratamiento</strong></li>
+            <li>🧹 <strong>Limpieza de trampas de grasa</strong></li>
+            <li>🔧 <strong>Limpieza de drenajes sanitarios</strong></li>
+            <li>💧 <strong>Bombeo de lodos</strong></li>
+            <li>🌱 <strong>Remoción de raíces</strong></li>
+            <li>💦 <strong>Limpieza de cisternas y tanques</strong></li>
+            <li>📹 <strong>Video inspección de drenajes</strong></li>
+            <li>🚛 <strong>Transporte de aguas tratadas</strong></li>
+        </ul>
 
-                <hr>
+        <hr>
 
-                <h3>💡 Ejemplos de preguntas:</h3>
+        <h3>📊 Información Disponible:</h3>
+        <ul>
+            <li>🏢 <strong>Análisis por Sector:</strong>
                 <ul>
-                    <li><em>"¿Qué propiedades hay disponibles en Monterrey?"</em></li>
-                    <li><em>"Muestra naves industriales mayores a 5000m²"</em></li>
-                    <li><em>"Compara precios entre Guadalajara y Ciudad de México"</em></li>
-                    <li><em>"¿Cuáles son las tendencias del mercado en Querétaro?"</em></li>
+                    <li>Centros comerciales: 241,756 registros</li>
+                    <li>Restaurantes: 170,646 registros</li>
+                    <li>Industria: 70,506 registros</li>
+                    <li>Corporativos: 10,977 registros</li>
+                    <li>Minería: 950 registros</li>
                 </ul>
-                
-                <p><strong>¡Adelante! Hazme cualquier pregunta sobre propiedades industriales.</strong></p>
-                """,
+            </li>
+            <li>🔍 <strong>Servicios más solicitados:</strong>
+                <ul>
+                    <li>Limpieza de Trampas de Grasa: 47,219 registros</li>
+                    <li>Disposición de Lodos: 594 registros</li>
+                    <li>Limpieza de Drenajes y Cisternas: 132 registros</li>
+                </ul>
+            </li>
+        </ul>
+
+        <hr>
+
+        <h3>💡 Ejemplos de preguntas:</h3>
+        <ul>
+            <li><em>"¿Qué servicios ofrecen para el sector industrial?"</em></li>
+            <li><em>"¿Cuál es el proceso de limpieza de trampas de grasa?"</em></li>
+            <li><em>"¿Qué sectores demandan más el servicio de disposición de lodos?"</em></li>
+            <li><em>"¿Cómo funciona el servicio de video inspección?"</em></li>
+            <li><em>"¿Qué ventajas tiene RAESA frente a la competencia?"</em></li>
+        </ul>
+        
+        <p><strong>¡Adelante! Hazme cualquier pregunta sobre nuestros servicios y análisis de mercado.</strong></p>
+        """,
                 "timestamp": time.time()
             }
             st.session_state.messages.append(welcome_msg)

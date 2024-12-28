@@ -14,17 +14,17 @@ if project_root not in sys.path:
 from src.config import Config
 from src.data.loader import DataLoader
 
-class RealEstateChatbot:
+class RAESAChatbot:
     def __init__(self, vectorstore):
         self.vectorstore = vectorstore
         self.anthropic = Anthropic(api_key=Config.ANTHROPIC_API_KEY)
         self.data_loader = DataLoader(Config.DATA_PATH)
         self.df = self.data_loader.load_data()
-        # self.market_analysis = DataLoader(Config.MARKET_ANALYSIS_PATH).load_data()
-        # Load market analysis
-        market_analysis_path = Path(Config.MARKET_ANALYSIS_PATH)
-        with open(market_analysis_path, 'r', encoding='utf-8') as f:
-            self.market_analysis = json.load(f)
+        
+        # Load RAESA data
+        raesa_data_path = Path(Config.RAESA_DATA_PATH)
+        with open(raesa_data_path, 'r', encoding='utf-8') as f:
+            self.raesa_data = json.load(f)
 
     def get_response(self, user_input: str, message_history: Optional[List[Dict[str, str]]] = None) -> str:
         """Get response using full context"""
@@ -63,30 +63,30 @@ class RealEstateChatbot:
     def get_welcome_message(self) -> str:
         """Returns a formatted welcome message using basic HTML"""
         return """
-        <h1>👋 ¡Bienvenido al Asistente de Bienes Raíces Industriales!</h1>
+        <h1>👋 ¡Bienvenido al Asistente de RAESA!</h1>
         
         <h2>🤝 ¿Cómo puedo ayudarte?</h2>
         
         <h3>📋 Servicios disponibles:</h3>
         <ul>
-            <li>🔍 <strong>Búsqueda de propiedades:</strong> Encuentra propiedades industriales por ubicación</li>
-            <li>📊 <strong>Información detallada:</strong> Obtén datos específicos de propiedades</li>
-            <li>📈 <strong>Análisis comparativo:</strong> Compara propiedades y mercados</li>
-            <li>📉 <strong>Tendencias:</strong> Analiza el comportamiento del mercado</li>
-            <li>💰 <strong>Precios:</strong> Consulta disponibilidad y condiciones comerciales</li>
+            <li>🔍 <strong>Desazolve:</strong> Servicios de desazolve para diferentes necesidades</li>
+            <li>🔍 <strong>Inspección:</strong> Video inspección de tuberías</li>
+            <li>♻️ <strong>Gestión de residuos:</strong> Manejo y disposición de lodos</li>
+            <li>🔧 <strong>Mantenimiento:</strong> Servicios preventivos y correctivos</li>
+            <li>🚨 <strong>Emergencias:</strong> Atención 24/7</li>
         </ul>
 
         <hr>
 
         <h3>💡 Ejemplos de preguntas:</h3>
         <ul>
-            <li><em>"¿Qué propiedades hay disponibles en Monterrey?"</em></li>
-            <li><em>"Muestra naves industriales mayores a 5000m²"</em></li>
-            <li><em>"Compara precios entre Guadalajara y Ciudad de México"</em></li>
-            <li><em>"¿Cuáles son las tendencias del mercado en Querétaro?"</em></li>
+            <li><em>"¿Qué servicios de desazolve ofrecen?"</em></li>
+            <li><em>"¿Cómo funciona el servicio de video inspección?"</em></li>
+            <li><em>"¿Cuál es el proceso de disposición de lodos?"</em></li>
+            <li><em>"¿Qué áreas geográficas cubren?"</em></li>
         </ul>
         
-        <p><strong>¡Adelante! Hazme cualquier pregunta sobre propiedades industriales.</strong></p>"""
+        <p><strong>¡Adelante! Hazme cualquier pregunta sobre nuestros servicios.</strong></p>"""
 
     def generate_response_with_context(self, user_input: str, context: str, message_history: Optional[List[Dict[str, str]]] = None) -> str:
         """Generate initial response using Claude with full context"""
@@ -112,15 +112,17 @@ class RealEstateChatbot:
                 for msg in message_history[-5:]
             ])
 
-        system_prompt = """Eres un experto asistente de bienes raíces industriales.
+        system_prompt = """Eres un experto asistente de RAESA, especializado en servicios de desazolve y gestión de residuos.
         Proporciona respuestas detalladas y precisas incluyendo TODOS los datos relevantes disponibles.
         
         Reglas importantes:
-        1. NO omitas ninguna información relevante
-        2. Incluye TODOS los datos numéricos y métricas disponibles
-        3. Si hay múltiples propiedades, menciona TODAS
-        4. Incluye detalles específicos de ubicación, precios y características
-        5. Mantén un tono profesional y técnico"""
+        1. NO omitas ninguna información relevante sobre servicios y capacidades
+        2. Incluye TODOS los datos numéricos y estadísticas disponibles
+        3. Si hay múltiples servicios relevantes, menciona TODOS
+        4. Incluye detalles específicos de servicios, áreas de cobertura y ventajas
+        5. Mantén un tono profesional y técnico
+        6. Enfatiza la experiencia y profesionalismo de RAESA
+        7. Destaca las ventajas competitivas cuando sea relevante"""
 
         response = self.anthropic.messages.create(
             model=Config.MODEL_NAME,
@@ -196,7 +198,7 @@ class RealEstateChatbot:
                 
                 Por favor, formatea esta información usando elementos HTML básicos para mejorar su legibilidad.
                 Asegúrate de:
-                1. Organizar la información en secciones claras
+                1. Organizar la informaci��n en secciones claras
                 2. Resaltar datos importantes
                 3. Usar emojis relevantes
                 4. Mantener un espaciado adecuado
@@ -208,29 +210,45 @@ class RealEstateChatbot:
         return self.clean_response(response.content[0].text)
 
     def _create_rich_context(self, docs, user_input: str) -> str:
-        """Create rich context from documents and market analysis"""
-        properties_info = []
+        """Create rich context from documents and RAESA data"""
+        services_info = []
         for doc in docs:
-            properties_info.append(doc.page_content)
+            services_info.append(doc.page_content)
         
-        market_context = {
-            "total_properties": len(self.df),
-            "market_summary": self.market_analysis.get('resumen_general', {}),
-            "city_distribution": self.market_analysis.get('propiedades_por_ciudad', {}),
-            "price_stats": self.market_analysis.get('estadisticas_precio', {})
+        # Extract relevant information from RAESA data
+        # Since RAESA_DataBook.json is a list of dictionaries
+        services = []
+        areas = []
+        ventajas = []
+        
+        for item in self.raesa_data:
+            if item.get("Documento") == "DataBook":
+                # Extract services information
+                if "servicios" in item.get("Sección", "").lower():
+                    services.append(item.get("Contenido", ""))
+                # Extract coverage areas
+                if "áreas" in item.get("Sección", "").lower() or "cobertura" in item.get("Sección", "").lower():
+                    areas.append(item.get("Contenido", ""))
+                # Extract competitive advantages
+                if "ventajas" in item.get("Sección", "").lower():
+                    ventajas.append(item.get("Contenido", ""))
+        
+        raesa_context = {
+            "servicios": services,
+            "areas_cobertura": areas,
+            "ventajas_competitivas": ventajas
         }
         
         return f"""
         Consulta del usuario: {user_input}
         
-        Información de propiedades relevantes:
-        {' '.join(properties_info)}
+        Información relevante de servicios:
+        {' '.join(services_info)}
         
-        Contexto del mercado:
-        - Total de propiedades: {market_context['total_properties']}
-        - Resumen del mercado: {json.dumps(market_context['market_summary'], indent=2)}
-        - Distribución por ciudad: {json.dumps(market_context['city_distribution'], indent=2)}
-        - Estadísticas de precios: {json.dumps(market_context['price_stats'], indent=2)}
+        Contexto de RAESA:
+        - Servicios: {json.dumps(raesa_context['servicios'], indent=2, ensure_ascii=False)}
+        - Áreas de cobertura: {json.dumps(raesa_context['areas_cobertura'], indent=2, ensure_ascii=False)}
+        - Ventajas competitivas: {json.dumps(raesa_context['ventajas_competitivas'], indent=2, ensure_ascii=False)}
         """
 
     def clean_response(self, text: Any) -> str:

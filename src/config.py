@@ -16,7 +16,7 @@ class Config:
     # Data paths using absolute paths
     DATA_PATH = os.getenv('DATA_PATH', str(BASE_DIR / 'src' / 'data' / 'processed' / 'real_estate_data.json'))
     MARKET_ANALYSIS_PATH = os.getenv('MARKET_ANALYSIS_PATH', str(BASE_DIR / 'src' / 'data' / 'processed' / 'analisis_mercado.json'))
-    
+    RAESA_DATA_PATH = os.getenv('RAESA_DATA_PATH', str(BASE_DIR / 'src' / 'data' / 'processed' / 'RAESA_DataBook.json'))
     # Cache directory using absolute path
     CACHE_DIR = BASE_DIR / 'cache'
     MODEL_NAME = "claude-3-5-sonnet-20240620"
@@ -36,3 +36,8 @@ class Config:
     EMBEDDING_DIMENSION = 1536  # Dimensión de embeddings de OpenAI
     EMBEDDING_BATCH_SIZE = 100
     VECTOR_SEARCH_NPROBE = 5
+    
+    # Update cookie settings
+    COOKIE_NAME = "raesa_chat_cookie"
+    COOKIE_KEY = "raesa_chat_signature"
+    COOKIE_EXPIRY_DAYS = 30
